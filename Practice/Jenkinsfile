@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        JUNIT_HOME = 'C:\\Users\\ysjeong\\Downloads\\eclipse-java-2026-03-R-win32-x86_64\\eclipse\\plugins'
+        JUNIT_CONSOLE = 'C:\\Users\\ysjeong\\Downloads\\junit-platform-console-standalone-1.7.1.jar'
     }
 
     stages {
@@ -15,22 +15,7 @@ pipeline {
                 dir /s /b Practice\\src\\*.java > sources.txt
                 type sources.txt
 
-                javac -encoding UTF-8 -cp "%JUNIT_HOME%\\*" -d classes @sources.txt
-                '''
-            }
-        }
-
-        stage('Check JUnit Console') {
-            steps {
-                bat '''
-                echo JUNIT_HOME=%JUNIT_HOME%
-
-                dir "%JUNIT_HOME%\\*console*.jar"
-
-                for %%F in ("%JUNIT_HOME%\\*console*.jar") do (
-                    echo ==== %%F ====
-                    jar tf "%%F" | findstr /i ConsoleLauncher
-                )
+                javac -encoding UTF-8 -cp "%JUNIT_CONSOLE%" -d classes @sources.txt
                 '''
             }
         }
@@ -40,7 +25,7 @@ pipeline {
                 bat '''
                 if exist test_results.txt del test_results.txt
 
-                java -cp "classes;%JUNIT_HOME%\\*" org.junit.platform.console.ConsoleLauncher --disable-ansi-colors --select-class JunitTest > test_results.txt 2>&1
+                java -jar "%JUNIT_CONSOLE%" --disable-ansi-colors --class-path classes --select-class JunitTest > test_results.txt 2>&1
 
                 set TEST_EXIT=%ERRORLEVEL%
 
