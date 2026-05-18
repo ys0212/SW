@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        JUNIT_HOME = 'C:\\Users\\ysjeong\\Downloads\\eclipse-java-2026-...\\eclipse\\plugins'
+        JUNIT_HOME = 'C:\\Users\\ysjeong\\Downloads\\eclipse-java-2026-03-R-win32-x86_64\\eclipse\\plugins'
     }
 
     stages {
@@ -11,6 +11,10 @@ pipeline {
                 bat '''
                 if exist classes rmdir /s /q classes
                 mkdir classes
+
+                dir "%JUNIT_HOME%\\junit*.jar"
+                dir "%JUNIT_HOME%\\org.opentest4j*.jar"
+                dir "%JUNIT_HOME%\\org.apiguardian*.jar"
 
                 dir /s /b Practice\\src\\*.java > sources.txt
                 type sources.txt
