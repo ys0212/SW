@@ -11,15 +11,21 @@ pipeline {
 
           stage('Build') {
               steps {
-                  // Windows 환경이므로 bat 사용
+                  // Windows 환경: classes 폴더 생성
                   bat 'if not exist classes mkdir classes'
-                  bat 'javac -encoding UTF-8 -d classes Practice/src/**/*.java'
+
+                  // Windows cmd에서 ** 글롭 이슈 회피: 모든 .java 파일 목록 생성 후 컴파일
+                  bat '''
+                  if exist sources.txt del /f /q sources.txt
+                  for /r Practice\\src %%f in (*.java) do @echo %%f>>sources.txt
+                  javac -encoding UTF-8 -d classes @sources.txt
+                  '''
               }
           }
 
           stage('Test') {
               steps {
-                  // JUnit 콘솔 JAR 실제 경로 반영
+                  // JUnit 콘솔 JAR 경로 (한 줄 유지: Groovy 파싱 에러 방지)
                   bat 'java -cp "classes;C:\\Users\\ysjeong\\Downloads\\eclipse-java-2026-03-R-win32-x86_64\\eclipse\
   \plugins\\junit-platform-console-standalone-1.7.1.jar" org.junit.platform.console.ConsoleLauncher --scan-classpath >
   Practice\\test_results.txt 2>&1'
