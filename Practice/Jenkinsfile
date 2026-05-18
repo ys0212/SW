@@ -1,20 +1,21 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
+    environment {
+        JUNIT_HOME = 'C:\\Users\\ysjeong\\Downloads\\eclipse-java-2026-...\\eclipse\\plugins'
+    }
 
+    stages {
         stage('Build') {
             steps {
                 bat '''
-                if not exist classes mkdir classes
+                if exist classes rmdir /s /q classes
+                mkdir classes
+
                 dir /s /b Practice\\src\\*.java > sources.txt
                 type sources.txt
-                javac -encoding UTF-8 -d classes @sources.txt
+
+                javac -encoding UTF-8 -cp "%JUNIT_HOME%\\*" -d classes @sources.txt
                 '''
             }
         }
@@ -22,7 +23,8 @@ pipeline {
         stage('Test') {
             steps {
                 bat '''
-                java -cp "classes;lib\\*" org.junit.platform.console.ConsoleLauncher --scan-classpath > test_results.txt
+                java -cp "classes;%JUNIT_HOME%\\*" org.junit.platform.console.ConsoleLauncher --scan-classpath > test_results.txt
+                type test_results.txt
                 '''
             }
         }
