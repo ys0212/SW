@@ -1,5 +1,15 @@
- pipeline {
+pipeline {
       agent any
+
+      options {
+          // 기본 자동 checkout 비활성화 (중복 checkout 방지)
+          skipDefaultCheckout(true)
+      }
+
+      environment {
+          JUNIT_JAR = 'C:/Users/ysjeong/Downloads/eclipse-java-2026-03-R-win32-x86_64/eclipse/plugins/junit-platform-
+  console-standalone-1.7.1.jar'
+      }
 
       stages {
           stage('Checkout') {
@@ -14,7 +24,7 @@
                   bat '''
   if exist sources.txt del /f /q sources.txt
   for /r Practice\\src %%f in (*.java) do @echo %%f>>sources.txt
-  javac -encoding UTF-8 -d classes @sources.txt
+  javac -encoding UTF-8 -cp "%JUNIT_JAR%" -d classes @sources.txt
   '''
               }
           }
@@ -22,8 +32,6 @@
           stage('Test') {
               steps {
                   bat '''
-  set "JUNIT_JAR=C:/Users/ysjeong/Downloads/eclipse-java-2026-03-R-win32-x86_64/eclipse/plugins/junit-platform-console-
-  standalone-1.7.1.jar"
   java -cp "classes;%JUNIT_JAR%" org.junit.platform.console.ConsoleLauncher --scan-classpath > Practice/test_results.txt
   2>&1
   '''
