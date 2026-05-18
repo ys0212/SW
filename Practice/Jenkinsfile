@@ -12,10 +12,6 @@ pipeline {
                 if exist classes rmdir /s /q classes
                 mkdir classes
 
-                dir "%JUNIT_HOME%\\junit*.jar"
-                dir "%JUNIT_HOME%\\org.opentest4j*.jar"
-                dir "%JUNIT_HOME%\\org.apiguardian*.jar"
-
                 dir /s /b Practice\\src\\*.java > sources.txt
                 type sources.txt
 
@@ -27,8 +23,15 @@ pipeline {
         stage('Test') {
             steps {
                 bat '''
-                java -cp "classes;%JUNIT_HOME%\\*" org.junit.platform.console.ConsoleLauncher --scan-classpath > test_results.txt
+                if exist test_results.txt del test_results.txt
+
+                java -cp "classes;%JUNIT_HOME%\\*" org.junit.platform.console.ConsoleLauncher --disable-ansi-colors --select-class JunitTest > test_results.txt 2>&1
+
+                set TEST_EXIT=%ERRORLEVEL%
+
                 type test_results.txt
+
+                exit /b %TEST_EXIT%
                 '''
             }
         }
