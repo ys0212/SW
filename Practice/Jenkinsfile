@@ -1,54 +1,16 @@
 pipeline {
-      agent any
-
-      options {
-          skipDefaultCheckout(true)
-      }
-
-      stages {
-          stage('Checkout') {
-              steps {
-                  checkout scm
-              }
-          }
-
-          stage('Build') {
-              steps {
-                  bat 'if not exist classes mkdir classes'
-                  bat '''
-  if exist sources.txt del /f /q sources.txt
-  for /r Practice\\src %%f in (*.java) do @echo %%f>>sources.txt
-
-  set "JUNIT_BASE=C:/Users/ysjeong/Downloads/eclipse-java-2026-03-R-win32-x86_64/eclipse"
-  set "JUNIT_JAR=%JUNIT_BASE%/plugins/junit-platform-console-standalone-1.7.1.jar"
-
-  javac -encoding UTF-8 -cp "%JUNIT_JAR%" -d classes @sources.txt
-  '''
-              }
-          }
-
-          stage('Test') {
-              steps {
-                  bat '''
-  set "JUNIT_BASE=C:/Users/ysjeong/Downloads/eclipse-java-2026-03-R-win32-x86_64/eclipse"
-  set "JUNIT_JAR=%JUNIT_BASE%/plugins/junit-platform-console-standalone-1.7.1.jar"
-
-  java -cp "classes;%JUNIT_JAR%" org.junit.platform.console.ConsoleLauncher --scan-classpath > Practice/test_results.txt
-  2>&1
-  '''
-              }
-          }
-      }
-
-      post {
-          always {
-              archiveArtifacts artifacts: 'Practice/test_results.txt', allowEmptyArchive: true
-          }
-          failure {
-              echo 'Build or test failed'
-          }
-          success {
-              echo 'Build and test succeeded'
-          }
-      }
-  }
+    agent any
+    stages {
+        stage('build') {
+            steps {
+            }
+        }
+        stage('test'){
+            steps{
+            }
+        }
+        stage('doker build'){
+            steps{
+            }
+    }
+}
