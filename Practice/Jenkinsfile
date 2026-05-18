@@ -20,6 +20,21 @@ pipeline {
             }
         }
 
+        stage('Check JUnit Console') {
+            steps {
+                bat '''
+                echo JUNIT_HOME=%JUNIT_HOME%
+
+                dir "%JUNIT_HOME%\\*console*.jar"
+
+                for %%F in ("%JUNIT_HOME%\\*console*.jar") do (
+                    echo ==== %%F ====
+                    jar tf "%%F" | findstr /i ConsoleLauncher
+                )
+                '''
+            }
+        }
+
         stage('Test') {
             steps {
                 bat '''
