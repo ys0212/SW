@@ -1,20 +1,16 @@
-pipeline {
+ pipeline {
       agent any
 
       stages {
           stage('Checkout') {
               steps {
-                  // 소스코드 체크아웃
                   checkout scm
               }
           }
 
           stage('Build') {
               steps {
-                  // classes 폴더 생성
                   bat 'if not exist classes mkdir classes'
-
-                  // Windows cmd에서 재귀적으로 Java 소스 수집 후 컴파일
                   bat '''
   if exist sources.txt del /f /q sources.txt
   for /r Practice\\src %%f in (*.java) do @echo %%f>>sources.txt
@@ -25,10 +21,12 @@ pipeline {
 
           stage('Test') {
               steps {
-                  // JUnit 콘솔 실행 (경로 구분자 / 사용)
-                  bat 'java -cp "classes;C:/Users/ysjeong/Downloads/eclipse-java-2026-03-R-win32-x86_64/eclipse/plugins/
-  junit-platform-console-standalone-1.7.1.jar" org.junit.platform.console.ConsoleLauncher --scan-classpath > Practice/
-  test_results.txt 2>&1'
+                  bat '''
+  set "JUNIT_JAR=C:/Users/ysjeong/Downloads/eclipse-java-2026-03-R-win32-x86_64/eclipse/plugins/junit-platform-console-
+  standalone-1.7.1.jar"
+  java -cp "classes;%JUNIT_JAR%" org.junit.platform.console.ConsoleLauncher --scan-classpath > Practice/test_results.txt
+  2>&1
+  '''
               }
           }
       }
