@@ -12,7 +12,9 @@ pipeline {
             steps {
                 bat '''
                 if not exist classes mkdir classes
-                javac -encoding UTF-8 -d classes Practice\\src\\**\\*.java
+                dir /s /b Practice\\src\\*.java > sources.txt
+                type sources.txt
+                javac -encoding UTF-8 -d classes @sources.txt
                 '''
             }
         }
@@ -20,7 +22,7 @@ pipeline {
         stage('Test') {
             steps {
                 bat '''
-                java -cp "classes;lib\\*;path\\to\\eclipse\\plugins\\junit-platform-console-standalone-6.0.0.jar" org.junit.platform.console.ConsoleLauncher --scan-classpath > test_results.txt
+                java -cp "classes;lib\\*" org.junit.platform.console.ConsoleLauncher --scan-classpath > test_results.txt
                 '''
             }
         }
@@ -28,7 +30,7 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: 'test_results.txt', fingerprint: true
+            archiveArtifacts artifacts: 'test_results.txt', fingerprint: true, allowEmptyArchive: true
         }
 
         failure {
